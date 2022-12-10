@@ -1,2 +1,12 @@
+# -*- encoding: utf-8 -*-
+import sys
+
+from PyQt6 import QtWidgets
+
+from src.apps.main.views import MainWindow
+
 if __name__ == '__main__':
-    pass
+    app = QtWidgets.QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
