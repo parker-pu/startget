@@ -17,17 +17,43 @@
    <double>5.000000000000000</double>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="download_button">
+   <widget class="QPushButton" name="download_run_button">
     <property name="geometry">
      <rect>
       <x>10</x>
+      <y>160</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>下载中</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="download_complete_button">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>250</y>
+      <width>75</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>下载完成</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="new_download_button">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
       <y>10</y>
       <width>75</width>
       <height>23</height>
      </rect>
     </property>
     <property name="text">
-     <string>下载</string>
+     <string>新建下载</string>
     </property>
    </widget>
   </widget>
