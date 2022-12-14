@@ -14,7 +14,7 @@ from PyQt6.QtWidgets import (
 from src.apps.download.views import (
     DownLoadWidget,
     DownLoadRunWidget,
-    DownLoadComplete, DownLoadBlockWidget
+    DownLoadComplete
 )
 
 
@@ -72,10 +72,8 @@ class MainWindow(QMainWindow):
         设置主布局
         :return:
         """
-        # self.main_layout.addWidget(DownLoadBlockWidget())
         self.main_layout.addWidget(DownLoadRunWidget())
         self.main_layout.addWidget(DownLoadComplete())
-        # self.main_layout.addWidget(DownLoadComplete())
         self.main_widget.setLayout(self.main_layout)
         self.setCentralWidget(self.main_widget)
 

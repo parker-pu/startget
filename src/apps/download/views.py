@@ -9,7 +9,7 @@ from pathlib import Path
 
 import requests
 from PyQt6 import uic
-from PyQt6.QtCore import QTimer
+from PyQt6.QtCore import QTimer, QRect
 from PyQt6.QtGui import (
     QStandardItemModel,
     QStandardItem
@@ -21,9 +21,10 @@ from PyQt6.QtWidgets import (
     QFileDialog,
     QLineEdit,
     QTableView,
-    QLabel,
     QTableWidget,
-    QTableWidgetItem, QHBoxLayout, QVBoxLayout, QPushButton, QScrollArea
+    QTableWidgetItem,
+    QProgressBar,
+    QPushButton
 )
 
 from src.apps.comm.db import DB
@@ -163,48 +164,6 @@ class DownLoadSaveWidget(QWidget, DB, Msg):
     #         self.warning("没有输入数据")
 
 
-class DownLoadBlockWidget(QWidget, DB):
-    row_task_layout_dict: dict = {}
-    task_list_layout: QVBoxLayout
-
-    def __init__(self, *arg, **kwargs):
-        super().__init__(*arg, **kwargs)
-        uic.loadUi("src/apps/download/ui/download_run2.ui", self)
-
-        self.setup_ui()
-
-    def setup_ui(self):
-        # self.task_list_layout.addStretch(2)
-        # self.task_list_layout.setSpacing(5)
-
-        q: QSqlQuery = self.exec("SELECT * FROM downloads WHERE status IN('WAIT') ORDER BY id")
-        # q: QSqlQuery = self.exec("SELECT * FROM downloads WHERE status IN('WAIT') ORDER BY id DESC LIMIT 10")
-        i = 0
-
-        while q.next():
-            row_task_layout = QHBoxLayout()
-
-            for qe in ("name", "data_size", "status", "loaded"):
-                _task = QLineEdit()
-                _task.setText(str(q.value(qe)))
-                _task.setReadOnly(True)
-                row_task_layout.addWidget(_task)
-
-            self.row_task_layout_dict[str(q.value("id"))] = row_task_layout
-            self.task_list_layout.insertLayout(i, row_task_layout)
-
-    def update_data(self):
-        pass
-
-
-class RowTaskWidget(QWidget, DB):
-    row_task_layout_dict: {}
-
-    def __init__(self, *arg, **kwargs):
-        super().__init__(*arg, **kwargs)
-        uic.loadUi("src/apps/download/ui/row_task.ui", self)
-
-
 class DownLoadRunWidget(QWidget, DB):
     download_run_table_widget: QTableWidget
 
@@ -216,8 +175,6 @@ class DownLoadRunWidget(QWidget, DB):
         # self.download_run_table_widget.isFullScreen()
         # self.download_run_table_widget.resizeRowsToContents()
         self.download_run_table_widget.horizontalHeader().setStyleSheet("QHeaderView::section{background:grey;}")
-
-        self.download_run_table_widget.setRowCount(100)
 
         self.load_data()
 
@@ -233,17 +190,29 @@ class DownLoadRunWidget(QWidget, DB):
         :return:
         """
         q: QSqlQuery = self.exec("SELECT * FROM downloads WHERE status IN('WAIT') ORDER BY id DESC")
-        i = 0
+        result = []
 
         while q.next():
-            # self.download_run_table_widget.setRowCount(i + 1)  # 动态设置列
-            self.download_run_table_widget.setItem(i, 0, QTableWidgetItem(q.value("name")))
-            self.download_run_table_widget.setItem(i, 1, QTableWidgetItem(q.value("data_size")))
-            self.download_run_table_widget.setItem(i, 2, QTableWidgetItem(q.value("status")))
-            self.download_run_table_widget.setItem(i, 3, QTableWidgetItem(str(q.value("loaded"))))
-            i += 1
-        self.download_run_table_widget.setRowCount(i)
-        # self.download_run_table_widget.update()
+            r = []
+            for rk in ("name", "data_size", "status", "loaded"):
+                r.append(q.value(rk))
+            result.append(r)
+
+        self.download_run_table_widget.setRowCount(len(result))
+        for idx, row in enumerate(result):
+            for kdx, k in enumerate(row):
+                if kdx == 3:
+                    qp = QProgressBar(self.download_run_table_widget)  # 进度条
+                    qp.setValue(k)
+                    qp.setGeometry(QRect(230, 690, 1021, 41))
+                    qp.setStyleSheet("QProgressBar {border: 2px solid grey; border-radius: 5px;"
+                                     "background-color: #FFFFFF; text-align:center; font-size:20px}")
+                    self.download_run_table_widget.setCellWidget(idx, kdx, qp)
+                else:
+                    self.download_run_table_widget.setItem(idx, kdx, QTableWidgetItem(str(k)))
+
+            self.download_run_table_widget.setCellWidget(idx, 4, QPushButton("删除"))
+            self.download_run_table_widget.setCellWidget(idx, 5, QPushButton("暂停"))
 
 
 class DownLoadComplete(QWidget, DB):
@@ -252,6 +221,12 @@ class DownLoadComplete(QWidget, DB):
     def __init__(self):
         super().__init__()
         uic.loadUi("src/apps/download/ui/download_complete.ui", self)
+
+        self.download_complete_table_widget.horizontalHeader().setStretchLastSection(True)
+        # self.download_run_table_widget.isFullScreen()
+        # self.download_run_table_widget.resizeRowsToContents()
+        self.download_complete_table_widget.horizontalHeader().setStyleSheet(
+            "QHeaderView::section{background:grey;}")
 
         self.load_data()
 
@@ -267,16 +242,15 @@ class DownLoadComplete(QWidget, DB):
         :return:
         """
         q: QSqlQuery = self.exec("SELECT * FROM downloads WHERE status IN('COMPLETE') ORDER BY id DESC")
-        i = 0
-        self.download_complete_table_widget.horizontalHeader().setStretchLastSection(True)
-        # self.download_complete_table_widget.isFullScreen()
-        self.download_complete_table_widget.horizontalHeader().setStyleSheet("QHeaderView::section{background:grey;}")
+        result = []
 
         while q.next():
-            self.download_complete_table_widget.setRowCount(i + 1)  # 动态设置列
-            self.download_complete_table_widget.setItem(i, 0, QTableWidgetItem(q.value("name")))
-            self.download_complete_table_widget.setItem(i, 1, QTableWidgetItem(q.value("data_size")))
-            self.download_complete_table_widget.setItem(i, 2, QTableWidgetItem(q.value("status")))
-            self.download_complete_table_widget.setItem(i, 3, QTableWidgetItem(str(q.value("loaded"))))
-            i += 1
-            self.download_complete_table_widget.update()
+            r = []
+            for rk in ("name", "data_size", "status", "loaded"):
+                r.append(QTableWidgetItem(str(q.value(rk))))
+            result.append(r)
+
+        self.download_complete_table_widget.setRowCount(len(result))
+        for idx, row in enumerate(result):
+            for kdx, k in enumerate(row):
+                self.download_complete_table_widget.setItem(idx, kdx, QTableWidgetItem(k))
