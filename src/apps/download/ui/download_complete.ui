@@ -28,6 +28,9 @@
    <property name="rowCount">
     <number>0</number>
    </property>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
    <column>
     <property name="text">
      <string extracomment="下载资源名称">名称</string>
@@ -41,11 +44,6 @@
    <column>
     <property name="text">
      <string>下载状态</string>
-    </property>
-   </column>
-   <column>
-    <property name="text">
-     <string>进度</string>
     </property>
    </column>
   </widget>

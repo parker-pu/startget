@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Form</class>
- <widget class="QWidget" name="Form">
+ <class>run_widget</class>
+ <widget class="QWidget" name="run_widget">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>672</width>
-    <height>373</height>
+    <width>899</width>
+    <height>551</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,12 +21,33 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>671</width>
-     <height>371</height>
+     <width>731</width>
+     <height>451</height>
     </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize">
+    <size>
+     <width>100</width>
+     <height>100</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777215</width>
+     <height>16777215</height>
+    </size>
    </property>
    <property name="layoutDirection">
     <enum>Qt::LeftToRight</enum>
+   </property>
+   <property name="autoScroll">
+    <bool>true</bool>
    </property>
    <property name="editTriggers">
     <set>QAbstractItemView::NoEditTriggers</set>
@@ -49,9 +70,26 @@
    <property name="rowCount">
     <number>0</number>
    </property>
+   <attribute name="horizontalHeaderVisible">
+    <bool>true</bool>
+   </attribute>
    <attribute name="horizontalHeaderCascadingSectionResizes">
     <bool>false</bool>
    </attribute>
+   <attribute name="verticalHeaderVisible">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="verticalHeaderShowSortIndicator" stdset="0">
+    <bool>false</bool>
+   </attribute>
+   <attribute name="verticalHeaderStretchLastSection">
+    <bool>false</bool>
+   </attribute>
+   <column>
+    <property name="text">
+     <string>ID</string>
+    </property>
+   </column>
    <column>
     <property name="text">
      <string extracomment="下载资源名称">名称</string>
@@ -79,7 +117,7 @@
    </column>
    <column>
     <property name="text">
-     <string>New Column</string>
+     <string/>
     </property>
    </column>
   </widget>

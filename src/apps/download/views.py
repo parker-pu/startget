@@ -24,7 +24,7 @@ from PyQt6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QProgressBar,
-    QPushButton
+    QPushButton, QHeaderView,
 )
 
 from src.apps.comm.db import DB
@@ -172,7 +172,6 @@ class DownLoadRunWidget(QWidget, DB):
         uic.loadUi("src/apps/download/ui/download_run.ui", self)
 
         self.download_run_table_widget.horizontalHeader().setStretchLastSection(True)
-        # self.download_run_table_widget.isFullScreen()
         # self.download_run_table_widget.resizeRowsToContents()
         self.download_run_table_widget.horizontalHeader().setStyleSheet("QHeaderView::section{background:grey;}")
 
@@ -194,14 +193,18 @@ class DownLoadRunWidget(QWidget, DB):
 
         while q.next():
             r = []
-            for rk in ("name", "data_size", "status", "loaded"):
+            for rk in ("id", "name", "data_size", "status", "loaded"):
                 r.append(q.value(rk))
             result.append(r)
 
+        # self.download_run_table_widget.resize(1080, 400)
         self.download_run_table_widget.setRowCount(len(result))
+        self.download_run_table_widget.setColumnWidth(0, 30)  # id 列宽度
+        self.download_run_table_widget.setColumnWidth(1, 250)  # id 列宽度
+        self.download_run_table_widget.setColumnHidden(0, True)  # id列隐藏
         for idx, row in enumerate(result):
             for kdx, k in enumerate(row):
-                if kdx == 3:
+                if kdx == 4:
                     qp = QProgressBar(self.download_run_table_widget)  # 进度条
                     qp.setValue(k)
                     qp.setGeometry(QRect(230, 690, 1021, 41))
@@ -211,8 +214,29 @@ class DownLoadRunWidget(QWidget, DB):
                 else:
                     self.download_run_table_widget.setItem(idx, kdx, QTableWidgetItem(str(k)))
 
-            self.download_run_table_widget.setCellWidget(idx, 4, QPushButton("删除"))
-            self.download_run_table_widget.setCellWidget(idx, 5, QPushButton("暂停"))
+            stop_button = QPushButton("暂停")
+            stop_button.setStyleSheet('background-color : NavajoWhite;')
+            # stop_button.setStyleSheet('background-color : DarkSeaGreen;')
+            self.download_run_table_widget.setCellWidget(idx, 5, stop_button)
+            delete_button = QPushButton("删除")
+            delete_button.setStyleSheet('background-color : LightCoral;')
+            delete_button.clicked.connect(self.delete_task)  # 保存文件
+            self.download_run_table_widget.setCellWidget(idx, 6, delete_button)
+
+    def delete_task(self):
+        """
+        删除任务
+        :return:
+        """
+        row_select = self.download_run_table_widget.selectedIndexes()
+        row_id = self.download_run_table_widget.takeItem(row_select.pop().row(), 0)
+
+        # 删除数据库数据
+        if row_id:
+            query = QSqlQuery(self.db)
+            query.prepare("DELETE FROM downloads WHERE id =:id ")
+            query.bindValue(":id", row_id.text())
+            query.exec()
 
 
 class DownLoadComplete(QWidget, DB):
