@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>static/download_inbox_icon.ico</file>
+        <file>static/link_broken_link_url_hyperlink_icon.ico</file>
+        <file>static/folder.ico</file>
+    </qresource>
+</RCC>
